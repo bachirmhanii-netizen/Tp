@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tortuga Pitch - Secure Gateway</title>
+    <title>Secure Gateway</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body oncontextmenu="return false;">
@@ -64,8 +64,6 @@
                 <img src="assets/btn-continue.png">
             </div>
         </div>
-
-        <p class="dev-tag">DEVELOPED BY WALID | ORIONIXAI</p>
     </div>
 
     <script>
@@ -86,7 +84,6 @@
         }
 
         function act(a) {
-            // No more loading, direct action
             if(a === 'home') { hideAll(); document.getElementById('view-main').classList.remove('hidden'); }
             if(a === 'warn') { hideAll(); document.getElementById('view-warn').classList.remove('hidden'); }
             if(a === 'login') { hideAll(); document.getElementById('view-login').classList.remove('hidden'); }
@@ -102,7 +99,7 @@
                 localStorage.setItem('_v_id', document.getElementById('rid').innerText);
                 localStorage.setItem('_v_key', document.getElementById('rky').innerText);
                 msg("VAULT UPDATED");
-                setTimeout(() => location.reload(), 100);
+                setTimeout(() => location.reload(), 50);
             }
             
             if(a === 'auth') {
