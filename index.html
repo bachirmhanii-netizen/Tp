@@ -1,1 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tortuga Pitch - Secure Gateway</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body oncontextmenu="return false;">
 
+    <div id="toast-wrap"></div>
+
+    <div id="loader" class="loader-overlay hidden">
+        <div class="spinner"></div>
+        <p>ENCRYPTING CONNECTION...</p>
+    </div>
+
+    <div class="app-container">
+        <img src="assets/logo.png" class="main-logo">
+        <div class="status-bar">SYSTEM STATUS: <span style="color: #00ffcc;">ENCRYPTED</span></div>
+
+        <div id="view-main">
+            <div class="img-btn" onclick="act('warn')">
+                <img src="assets/btn-signup.png">
+            </div>
+            <div class="img-btn" onclick="act('login')">
+                <img src="assets/btn-login.png">
+            </div>
+        </div>
+
+        <div id="view-warn" class="hidden">
+            <div class="warning-box">
+                <div class="close-x" onclick="act('home')">×</div>
+                <p class="warn-msg">⚠️ CRITICAL: YOU MUST SAVE YOUR ID AND KEY. NO RECOVERY SYSTEM EXISTS ON TOR. LOSE THEM = LOSE FUNDS.</p>
+                <div class="img-btn" onclick="act('create')">
+                    <img src="assets/btn-confirm.png">
+                </div>
+            </div>
+        </div>
+
+        <div id="view-create" class="hidden">
+            <div class="data-card">
+                <label>YOUR 15-DIGIT ID</label>
+                <div class="val" id="rid" onclick="cp('rid')">----------</div>
+                <label style="margin-top:10px; display:block;">PRIVATE KEY (HEX)</label>
+                <div class="val" id="rky" onclick="cp('rky')">----------</div>
+            </div>
+            <p class="hint">TAP VALUES TO COPY</p>
+            <div class="img-btn" onclick="act('save')">
+                <img src="assets/btn-continue.png">
+            </div>
+        </div>
+
+        <div id="view-login" class="hidden">
+            <div class="close-x" onclick="act('home')">×</div>
+            
+            <div class="input-wrapper">
+                <input type="text" id="uid" placeholder="ENTER ID" onfocus="checkSuggestions()">
+                
+                <div id="suggest-card" class="suggest-card hidden" onclick="fillData()">
+                    <p id="suggest-id-text"></p>
+                    <p>KEY: ****************</p>
+                </div>
+                
+                <input type="password" id="uky" placeholder="ENTER PRIVATE KEY">
+            </div>
+
+            <div class="img-btn" onclick="act('auth')">
+                <img src="assets/btn-continue.png">
+            </div>
+        </div>
+
+        <p class="dev-tag">DEVELOPED BY WALID | ORIONIXAI</p>
+    </div>
+
+    <script>
+        const vault = {
+            id: localStorage.getItem('_v_id'),
+            key: localStorage.getItem('_v_key'),
+            ban: localStorage.getItem('_v_ban') === '1',
+            fails: 0
+        };
+
+        function msg(t, err=false) {
+            const w = document.getElementById('toast-wrap');
+            const box = document.createElement('div');
+            box.className = `toast ${err ? 'error' : ''}`;
+            box.innerHTML = `<span>${t}</span><span onclick="this.parentElement.remove()" style="cursor:pointer">×</span>`;
+            w.appendChild(box);
+            setTimeout(() => { if(box) box.remove(); }, 4000);
+        }
+
+        function act(a) {
+            const loader = document.getElementById('loader');
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                if(a === 'home') { hideAll(); document.getElementById('view-main').classList.remove('hidden'); }
+                if(a === 'warn') { hideAll(); document.getElementById('view-warn').classList.remove('hidden'); }
+                if(a === 'login') { hideAll(); document.getElementById('view-login').classList.remove('hidden'); }
+                
+                if(a === 'create') {
+                    hideAll();
+                    document.getElementById('view-create').classList.remove('hidden');
+                    document.getElementById('rid').innerText = Array.from({length: 15}, () => Math.floor(Math.random()*10)).join('');
+                    document.getElementById('rky').innerText = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+                }
+                
+                if(a === 'save') {
+                    localStorage.setItem('_v_id', document.getElementById('rid').innerText);
+                    localStorage.setItem('_v_key', document.getElementById('rky').innerText);
+                    msg("VAULT UPDATED");
+                    setTimeout(() => location.reload(), 1200);
+                }
+                
+                if(a === 'auth') {
+                    const i = document.getElementById('uid').value;
+                    const k = document.getElementById('uky').value;
+                    if(i === vault.id && k === vault.key) {
+                        msg("ACCESS GRANTED");
+                    } else {
+                        vault.fails++;
+                        if(vault.fails >= 3) { localStorage.setItem('_v_ban', '1'); location.reload(); }
+                        else { msg(`ACCESS DENIED (${vault.fails}/3)`, true); }
+                    }
+                }
+            }, 700);
+        }
+
+        function checkSuggestions() {
+            if(vault.id) {
+                document.getElementById('suggest-id-text').innerText = "USE ID: " + vault.id;
+                document.getElementById('suggest-card').classList.remove('hidden');
+            }
+        }
+
+        function fillData() {
+            document.getElementById('uid').value = vault.id;
+            document.getElementById('uky').value = vault.key;
+            document.getElementById('suggest-card').classList.add('hidden');
+            msg("AUTO-FILLED");
+        }
+
+        function hideAll() {
+            document.querySelectorAll('.app-container > div').forEach(d => {
+                if(d.id && d.id.startsWith('view')) d.classList.add('hidden');
+            });
+            document.getElementById('suggest-card').classList.add('hidden');
+        }
+
+        function cp(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            msg("COPIED");
+        }
+
+        if(vault.ban) document.body.innerHTML = "<div style='color:red; text-align:center; padding-top:100px; font-family:sans-serif;'><h1>403 - FORBIDDEN</h1><p>ACCESS DENIED BY SECURITY SYSTEM</p></div>";
+    </script>
+</body>
+</html>
