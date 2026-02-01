@@ -16,10 +16,10 @@
 
         <div id="view-main">
             <div class="img-btn" onclick="act('warn')">
-                <img src="assets/btn-signup.png">
+                <img src="assets/btn-signup.png" alt="SIGN UP">
             </div>
             <div class="img-btn" onclick="act('login')">
-                <img src="assets/btn-login.png">
+                <img src="assets/btn-login.png" alt="LOG IN">
             </div>
         </div>
 
@@ -28,7 +28,7 @@
                 <div class="close-x" onclick="act('home')">×</div>
                 <p class="warn-msg">⚠️ CRITICAL: YOU MUST SAVE YOUR ID AND KEY. NO RECOVERY SYSTEM EXISTS ON TOR. LOSE THEM = LOSE FUNDS.</p>
                 <div class="img-btn" onclick="act('create')">
-                    <img src="assets/btn-confirm.png">
+                    <img src="assets/btn-confirm.png" alt="CONFIRM">
                 </div>
             </div>
         </div>
@@ -42,7 +42,7 @@
             </div>
             <p class="hint">TAP VALUES TO COPY</p>
             <div class="img-btn" onclick="act('save')">
-                <img src="assets/btn-continue.png">
+                <img src="assets/btn-continue.png" alt="CONTINUE">
             </div>
         </div>
 
@@ -61,7 +61,7 @@
             </div>
 
             <div class="img-btn" onclick="act('auth')">
-                <img src="assets/btn-continue.png">
+                <img src="assets/btn-continue.png" alt="CONTINUE">
             </div>
         </div>
     </div>
@@ -98,8 +98,8 @@
             if(a === 'save') {
                 localStorage.setItem('_v_id', document.getElementById('rid').innerText);
                 localStorage.setItem('_v_key', document.getElementById('rky').innerText);
-                msg("VAULT UPDATED");
-                setTimeout(() => location.reload(), 50);
+                msg("SUCCESSFULLY SAVED");
+                setTimeout(() => location.reload(), 100);
             }
             
             if(a === 'auth') {
@@ -121,7 +121,7 @@
 
         function checkSuggestions() {
             if(vault.id) {
-                document.getElementById('suggest-id-text').innerText = "USE ID: " + vault.id;
+                document.getElementById('suggest-id-text').innerText = "RESTORE: " + vault.id;
                 document.getElementById('suggest-card').classList.remove('hidden');
             }
         }
@@ -130,7 +130,7 @@
             document.getElementById('uid').value = vault.id;
             document.getElementById('uky').value = vault.key;
             document.getElementById('suggest-card').classList.add('hidden');
-            msg("AUTO-FILLED");
+            msg("DATA RESTORED");
         }
 
         function hideAll() {
@@ -142,12 +142,12 @@
 
         function cp(id) {
             const text = document.getElementById(id).innerText;
-            if(text.includes('---')) return;
+            if(text.includes('-')) return;
             navigator.clipboard.writeText(text);
             msg("COPIED");
         }
 
-        if(vault.ban) document.body.innerHTML = "<div style='color:red; text-align:center; padding-top:100px; font-family:sans-serif;'><h1>403 - FORBIDDEN</h1><p>ACCESS DENIED BY SECURITY SYSTEM</p></div>";
+        if(vault.ban) document.body.innerHTML = "<div style='color:red; text-align:center; padding-top:100px;'><h1>403 - FORBIDDEN</h1></div>";
     </script>
 </body>
 </html>
