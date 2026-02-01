@@ -10,11 +10,6 @@
 
     <div id="toast-wrap"></div>
 
-    <div id="loader" class="loader-overlay hidden">
-        <div class="spinner"></div>
-        <p>ENCRYPTING CONNECTION...</p>
-    </div>
-
     <div class="app-container">
         <img src="assets/logo.png" class="main-logo">
         <div class="status-bar">SYSTEM STATUS: <span style="color: #00ffcc;">ENCRYPTED</span></div>
@@ -91,48 +86,40 @@
         }
 
         function act(a) {
-            const loader = document.getElementById('loader');
+            // No more loading, direct action
+            if(a === 'home') { hideAll(); document.getElementById('view-main').classList.remove('hidden'); }
+            if(a === 'warn') { hideAll(); document.getElementById('view-warn').classList.remove('hidden'); }
+            if(a === 'login') { hideAll(); document.getElementById('view-login').classList.remove('hidden'); }
             
-            // Fast loading trigger
-            loader.classList.remove('hidden');
+            if(a === 'create') {
+                hideAll();
+                document.getElementById('view-create').classList.remove('hidden');
+                document.getElementById('rid').innerText = Array.from({length: 15}, () => Math.floor(Math.random()*10)).join('');
+                document.getElementById('rky').innerText = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            }
             
-            setTimeout(() => {
-                loader.classList.add('hidden');
-                
-                if(a === 'home') { hideAll(); document.getElementById('view-main').classList.remove('hidden'); }
-                if(a === 'warn') { hideAll(); document.getElementById('view-warn').classList.remove('hidden'); }
-                if(a === 'login') { hideAll(); document.getElementById('view-login').classList.remove('hidden'); }
-                
-                if(a === 'create') {
-                    hideAll();
-                    document.getElementById('view-create').classList.remove('hidden');
-                    document.getElementById('rid').innerText = Array.from({length: 15}, () => Math.floor(Math.random()*10)).join('');
-                    document.getElementById('rky').innerText = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
-                }
-                
-                if(a === 'save') {
-                    localStorage.setItem('_v_id', document.getElementById('rid').innerText);
-                    localStorage.setItem('_v_key', document.getElementById('rky').innerText);
-                    msg("VAULT UPDATED");
-                    setTimeout(() => location.reload(), 300);
-                }
-                
-                if(a === 'auth') {
-                    const i = document.getElementById('uid').value;
-                    const k = document.getElementById('uky').value;
-                    if(i === vault.id && k === vault.key) {
-                        msg("ACCESS GRANTED");
-                    } else {
-                        vault.fails++;
-                        if(vault.fails >= 3) { 
-                            localStorage.setItem('_v_ban', '1'); 
-                            location.reload(); 
-                        } else { 
-                            msg(`ACCESS DENIED (${vault.fails}/3)`, true); 
-                        }
+            if(a === 'save') {
+                localStorage.setItem('_v_id', document.getElementById('rid').innerText);
+                localStorage.setItem('_v_key', document.getElementById('rky').innerText);
+                msg("VAULT UPDATED");
+                setTimeout(() => location.reload(), 100);
+            }
+            
+            if(a === 'auth') {
+                const i = document.getElementById('uid').value;
+                const k = document.getElementById('uky').value;
+                if(i === vault.id && k === vault.key) {
+                    msg("ACCESS GRANTED");
+                } else {
+                    vault.fails++;
+                    if(vault.fails >= 3) { 
+                        localStorage.setItem('_v_ban', '1'); 
+                        location.reload(); 
+                    } else { 
+                        msg(`ACCESS DENIED (${vault.fails}/3)`, true); 
                     }
                 }
-            }, 200); // Super fast 200ms
+            }
         }
 
         function checkSuggestions() {
